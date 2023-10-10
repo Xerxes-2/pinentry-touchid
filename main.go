@@ -50,7 +50,7 @@ var (
 	DefaultLogLocation = filepath.Join(filepath.Clean(os.TempDir()), DefaultLogFilename)
 
 	emailRegex    = regexp.MustCompile(`\"(?P<name>.*<(?P<email>.*)>)\"`)
-	keyIDRegex    = regexp.MustCompile(`ID (?P<keyId>.*),`) // keyID should be of exactly 8 or 16 characters
+	keyIDRegex    = regexp.MustCompile(`(ID|标识) (?P<keyId>.*)(,|，)`) // keyID should be of exactly 8 or 16 characters
 	sshKeyIDRegex = regexp.MustCompile(`SHA256:(?P<keyId>.*)`)
 
 	errEmptyResults    = errors.New("no matching entry was found")
@@ -269,8 +269,8 @@ func GetPIN(authFn AuthFunc, promptFn PromptFunc, logger *log.Logger) GetPinFunc
 		keyID := ""
 
 		matches = keyIDRegex.FindStringSubmatch(s.Desc)
-		if len(matches) >= 2 {
-			keyID = matches[1]
+		if len(matches) >= 3 {
+			keyID = matches[2]
 		} else {
 			matches = sshKeyIDRegex.FindStringSubmatch(s.Desc)
 			if len(matches) >= 1 {
